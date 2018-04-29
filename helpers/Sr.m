@@ -26,7 +26,7 @@
 		[NSNumber numberWithInt:0],
 		[NSNumber numberWithInt:0],
 		[NSNumber numberWithInt:0],
-		[@"scale_aspect_fit", @"bottom"],
+		@[@"scale_aspect_fit", @"bottom"],
 		[NSNumber numberWithInt:2],
 		@"BOTTOM_RIGHT"
 		] forKeys:@[
