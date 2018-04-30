@@ -19,7 +19,7 @@ typedef void(^SrsCollectionViewBlock)(SrsCollectionViewController *collectionVC)
 @property(retain, nonatomic) NSMutableArray *enabledFiltersKeys; // @synthesize enabledFiltersKeys=_enabledFiltersKeys;
 @property(retain, nonatomic) NSMutableArray *filters; // @synthesize filters=_filters;
 @property(copy, nonatomic) SrsCollectionViewBlock doneBlock; // @synthesize doneBlock=_doneBlock;
-- (id)emptyImage;
+- (UIImage *)emptyImage;
 - (id)collectionView:(id)arg1 cellForItemAtIndexPath:(id)arg2;
 - (void)collectionView:(id)arg1 didSelectItemAtIndexPath:(id)arg2;
 - (long long)collectionView:(id)arg1 numberOfItemsInSection:(long long)arg2;

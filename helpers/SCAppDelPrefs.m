@@ -151,7 +151,7 @@
         [preferencesTable presentViewController:tweetSheet animated:YES completion:nil];
 	}
 }
-- (void)loadPreferencesOnViewController:(id)arg1 {
+- (void)loadPreferencesOnViewController:(UIViewController *)arg1 {
 	FRPViewSection *headerSection = [FRPViewSection sectionWithHeight:70
                                                             initBlock:^(UITableViewCell *cell) {
                                                                 /* design your cell as you wish */
@@ -326,9 +326,9 @@
         [locationPicker setCompletionHandler:^(SCAppDelLocation *location) {
 
             sender.detailTextLabel.text = location.name;
-            [[self navigationController] popViewControllerAnimated:YES];
+            [[arg1 navigationController] popViewControllerAnimated:YES];
         }];
-        [self.navigationController pushViewController:locationPicker animated:YES];
+        [arg1.navigationController pushViewController:locationPicker animated:YES];
     }];
 
 
@@ -343,7 +343,7 @@
                                                  changeBlock:nil];
     [section7 addCell:switchCell16];
 
-    FRPLinkCell *locationChooseCell = [FRPLinkCell cellWithTitle:[[SCAppDelPrefs sharedInstance] localizedStringForKey:@"FILTERS_VIEW"] selectedBlock:^(UITableViewCell *sender) {
+    locationLinkCell = [FRPLinkCell cellWithTitle:[[SCAppDelPrefs sharedInstance] localizedStringForKey:@"FILTERS_VIEW"] selectedBlock:^(UITableViewCell *sender) {
         
        SrsCollectionViewController *collectionVC = [SrsCollectionViewController initializeController];
        [collectionVC setDoneBlock:^(SrsCollectionViewController *collectionVC){
@@ -353,15 +353,46 @@
        }]; 
        UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:collectionVC];
-        [self presentViewController:navigationController
+        [arg1 presentViewController:navigationController
                            animated:YES
                          completion:nil];
 
     }];
 
+    [locationLinkCell.detailTextLabel setText:[NSString stringWithFormat:@"%zd", [SrsHelper enabledFiltersCount]]];
+    [section7 addCell:locationLinkCell];
+
     
+    FRPSection *section8 = [FRPSection 
+        sectionWithTitle:nil 
+        footer:[@"Copyright © 2018 Othman Al-Omiry. All rights reserved" stringByAppendingString:@"\nwww.othman(7arami).store"]];
+    [section8 addCell:[FRPDeveloperCell cellWithTitle:@"Developer" detail:@"Othman AlOmiry (7arami)" image:nil url:@"http://twitter.com/OthmanAl3miry(7arami)"]];
+
+    FRPreferences *table = [FRPreferences tableWithSections:@[
+        section1,
+        section2,
+        section3,
+        section4,
+        section5,
+        section6,
+        section7,
+        section8,
+        ]
+                                                      title:@"IMSnapChat"
+                                                  tintColor:[UIColor yellowColor]];
+
+    UIBarButtonItem *heartBtn = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"SCOHeart.png"] style:0 target:self action:@selector(shareTapped:)];
+    table.navigationItem.leftBarButtonItem = heartBtn;
+
+    UIBarButtonItem *dismissBtn = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"SCOHeart.png"] style:0 target:self action:@selector(dismissPreferencesTable:)];
+    table.navigationItem.rightBarButtonItem = dismissBtn;
 
 
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:table];
+        [arg1 presentViewController:navigationController
+                           animated:YES
+                         completion:nil];
 }
 @end
 

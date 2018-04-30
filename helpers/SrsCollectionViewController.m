@@ -185,5 +185,47 @@
 
 	}];
 }
+- (long long)numberOfSectionsInCollectionView:(UICollectionView *)arg1 {
+	return 1;
+}
+- (long long)collectionView:(UICollectionView *)arg1 numberOfItemsInSection:(long long)arg2 {
+	return [[self filters] count];
+}
+- (void)collectionView:(UICollectionView *)arg1 didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	SrCollectionViewCell *cell = [arg1 cellForItemAtIndexPath:arg2];
+	Srs *filter = [self.filters objectAtIndex:[indexPath item]];
+	if ([self.enabledFiltersKeys containsObject:filter.key]) {
+		[self.enabledFiltersKeys removeObject:filter.key];
+		[cell setFilterSelected:NO];
+		[SrsHelper saveEnabledFiltersKeys:self.enabledFiltersKeys];
+	} else {
+
+		[self.enabledFiltersKeys addObject:filter.key];
+		[cell setFilterSelected:YES];
+		[SrsHelper saveEnabledFiltersKeys:self.enabledFiltersKeys];
+	}
+	[self updateTitle];
+
+
+}
+- (UICollectionViewCell *)collectionView:(UICollectionView *)arg1 cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+	SrCollectionViewCell *cell = [arg1 dequeueReusableCellWithReuseIdentifier:@"SrCollectionViewCellIdentifier"];
+	Srs *filter = [self.filters objectAtIndex:[indexPath item]];
+	NSURL *filterUrl = [NSURL fileURLWithPath:[filter path]];
+
+	[cell.imageView sd_setImageWithURL:filterUrl placeholderImage:[self emptyImage]];
+
+	[cell setFilterSelected:[self.enabledFiltersKeys containsObject:filter.key]];
+}
+
+- (UIImage *)emptyImage {
+
+	UIGraphicsBeginImageContextWithOptions(CGSizeMake(100, 100), NO);
+    UIImage *emptyImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return emptyImg;
+
+}
 @end
 
