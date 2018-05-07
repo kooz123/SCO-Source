@@ -9,10 +9,36 @@
 @implementation SCAppDelSnapSaver
 
 + (void)handleSnapSaveCompletion:(_Bool)arg1 {
-
+	if (arg1) {
+		[ProgressHUD showSuccess:[[SCAppDelPrefs sharedInstance] localizedStringForKey:@"DONE"]];
+	} else {
+		[ProgressHUD showError];
+	}
+	[ProgressHUD dismissAfterDelay:2];
 }
-+ (void)saveSnap:(id)arg1 withImage:(id)arg2 completion:(CDUnknownBlockType)arg3 {
++ (void)saveSnap:(id)arg1 withImage:(UIImage *)arg2 completion:(void (^)(BOOL success, NSError *error))arg3 {
 
+	UIViewController *rootVC = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+	[SCAppDelSaver showSaveAlertIfNeededForMediaType:0 controller:rootVC saveBlock:^(BOOL success) {
+
+		BOOL isImageMedia = [[arg1 media] isImage];
+		if (isImageMedia) {
+			[SCAppDelSaver handleImageSave:arg2 fromController:rootVC completion:^(BOOL success, NSError *error){
+
+				[[self class] handleSnapSaveCompletion:success];
+			}];
+		} else {
+			BOOL isVideoMedia = [[arg1 media] isVideo];
+			if (isVideoMedia) {
+				NSString *mediaId = [[arg1 media] mediaId];
+				NSString *videPath = [NSClassFromString(@"Media") videoPathWithMediaId:mediaId];
+				[SCAppDelSaver handleVideoSave:videPath fromController:rootVC completion:^(BOOL success, NSError *error){
+					[[self class] handleSnapSaveCompletion:success];
+				}];
+			}
+
+		}
+	}];
 }
 
 @end

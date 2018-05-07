@@ -12,11 +12,10 @@
 }
 
 + (id)albumWithTitle:(id)arg1;
-+ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 withAssetCollection:(id)arg3 completion:(CDUnknownBlockType)arg4;
-+ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 albumName:(id)arg3 completion:(CDUnknownBlockType)arg4;
-+ (void)handleVideoSave:(id)arg1 fromController:(id)arg2 completion:(CDUnknownBlockType)arg3;
-+ (void)handleImageSave:(id)arg1 fromController:(id)arg2 completion:(CDUnknownBlockType)arg3;
-+ (void)showSaveAlertIfNeededForMediaType:(long long)arg1 controller:(id)arg2 saveBlock:(CDUnknownBlockType)arg3;
++ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 withAssetCollection:(id)arg3 completion:(void (^)(BOOL success, NSError *error))arg4;
++ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 albumName:(id)arg3 completion:(void (^)(BOOL success, NSError *error))arg4;
++ (void)handleVideoSave:(id)arg1 fromController:(id)arg2 completion:(void (^)(BOOL success, NSError *error))arg3;
++ (void)handleImageSave:(id)arg1 fromController:(id)arg2 completion:(void (^)(BOOL success, NSError *error))arg3;
++ (void)showSaveAlertIfNeededForMediaType:(long long)arg1 controller:(id)arg2 saveBlock:(void (^)(BOOL success))arg3;
 
 @end
-

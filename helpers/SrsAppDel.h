@@ -21,4 +21,3 @@
 - (void)updateAppDelFiltersForSnapchatWithCompletion:(void (^)(NSArray *filters, NSDictionary *filtersDict))completion;
 
 @end
-

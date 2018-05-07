@@ -12,7 +12,7 @@
 }
 
 + (void)mergeAudioFile:(id)arg1 andVideoFile:(id)arg2 completion:(CDUnknownBlockType)arg3;
-+ (void)downloadFileFromURL:(id)arg1 completion:(CDUnknownBlockType)arg2;
++ (void)downloadFileFromURL:(id)arg1 completion:(void (^)(BOOL success, NSError *error))arg2;
 + (void)getVideoAndAudioURLsFromM3U8URL:(id)arg1 completion:(CDUnknownBlockType)arg2;
 + (void)generateVideoURLFromM3U8:(id)arg1 key:(id)arg2 iv:(id)arg3 completion:(CDUnknownBlockType)arg4;
 + (void)saveVideoFromLocalPath:(id)arg1 controller:(id)arg2;

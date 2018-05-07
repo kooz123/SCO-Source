@@ -43,7 +43,7 @@
 	if (self.completionHandler) {
 		self.completionHandler(location);
 	}
-	
+
 }
 - (UITableViewCell *)tableView:(UITableView *)arg1 cellForRowAtIndexPath:(NSIndexPath *)arg2 {
 	static NSString *identifier = @"SCAppDelLocationCell";
@@ -67,7 +67,7 @@
 - (void)setupSearchController {
 	SCAppDelLocationPickerResults *locationPickerResults = [[SCAppDelLocationPickerResults alloc] init];
 	[self setResultsController:locationPickerResults];
-	
+
 	UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:[self resultsController]];
 	[self setSearchController:searchController];
 	[[self searchController] setSearchResultsUpdater:self];
@@ -160,7 +160,7 @@
 	[userPrefs setFloat:[arg1 longitude] forKey:@"scLocationLongitude"];
 	[userPrefs setObject:[arg1 name] forKey:@"scLocationDescription"];
 	[userPrefs synchronize];
-	[delPrefs setScLastLocation:[delPrefs location]];	
+	[delPrefs setScLastLocation:[delPrefs location]];
 }
 - (void)viewDidAppear:(_Bool)arg1 {
 	[super viewDidAppear:arg1];
@@ -185,4 +185,3 @@
 	}
 }
 @end
-

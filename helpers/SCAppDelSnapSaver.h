@@ -12,7 +12,7 @@
 }
 
 + (void)handleSnapSaveCompletion:(_Bool)arg1;
-+ (void)saveSnap:(id)arg1 withImage:(id)arg2 completion:(CDUnknownBlockType)arg3;
++ (void)saveSnap:(id)arg1 withImage:(id)arg2 completion:(void (^)(BOOL success, NSError *error))arg3;
 
 @end
 

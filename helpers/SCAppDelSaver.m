@@ -18,21 +18,127 @@
 	}
 	return nil;
 }
-+ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 withAssetCollection:(id)arg3 completion:(CDUnknownBlockType)arg4 {
++ (void)saveToPhotoLibraryWithImage:(UIImage *)arg1 orVideoURL:(NSURL *)arg2 withAssetCollection:(id)arg3 completion:(void (^)(BOOL success, NSError *error))arg4 {
+
+	PHPhotoLibrary *photoLibrary = [PHPhotoLibrary sharedPhotoLibrary];
+	[photoLibrary performChanges:^{
+
+                    PHAssetChangeRequest *assetChangeRequest = nil;
+                    if (arg1) {
+                    	assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                    }
+                    if (arg2) {
+                    	assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:videoURL];
+                    }
+                    if (assetChangeRequest && arg3) {
+                    	PHAssetCollectionChangeRequest *assetCollectionChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:arg3];
+      					[assetCollectionChangeRequest addAssets:@[[assetChangeRequest placeholderForCreatedAsset]]];
+                    }
+
+                } completionHandler:^(BOOL success, NSError *error) {
+                    arg4(success, error);
+                }];
+}
++ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 albumName:(id)arg3 completion:(void (^)(BOOL success, NSError *error))arg4 {
+
+	if (arg3) {
+		NSString *albumName = [[self class] albumWithTitle:arg3];
+		if (albumName) {
+			[[self class] saveToPhotoLibraryWithImage:arg1 orVideoURL:arg2 withAssetCollection:albumName completion:arg4];
+		} else {
+		 	PHObjectPlaceholder *albumPlaceholder;
+
+			PHPhotoLibrary *photoLibrary = [PHPhotoLibrary sharedPhotoLibrary];
+			[photoLibrary performChanges:^{
+
+		                    PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:albumName];
+        					albumPlaceholder = changeRequest.placeholderForCreatedAssetCollection;
+
+		                } completionHandler:^(BOOL success, NSError *error) {
+		                    if (success) {
+								PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumPlaceholder.localIdentifier] options:nil];
+								[[self class] saveToPhotoLibraryWithImage:arg1 orVideoURL:arg2 withAssetCollection:fetchResult.firstObject completion:arg4];
+		                    }
+		                    if (arg4) {
+		                    	arg4(success, error);
+		                    }
+		                }];
+		}
+	} else {
+		[[self class] saveToPhotoLibraryWithImage:arg1 orVideoURL:arg2 withAssetCollection:nil completion:arg4];
+	}
 
 }
-+ (void)saveToPhotoLibraryWithImage:(id)arg1 orVideoURL:(id)arg2 albumName:(id)arg3 completion:(CDUnknownBlockType)arg4 {
++ (void)handleVideoSave:(id)arg1 fromController:(id)arg2 completion:(void (^)(BOOL success, NSError *error))arg3 {
+	if (arg1) {
+
+		if ([[NSFileManager defaultManager] fileExistsAtPath:arg1]) {
+			NSString *albumName = nil;
+			if ([[SCAppDelPrefs sharedInstance] scSnapSaveButton] && [[[SCAppDelPrefs sharedInstance] scSaveAlbumName] length]) {
+				albumName = [[SCAppDelPrefs sharedInstance] scSaveAlbumName];
+			}
+
+			[[self class] saveToPhotoLibraryWithImage:nil orVideoURL:[NSURL fileURLWithPath:arg1] albumName:albumName completion:^(BOOL success, NSError *error) {
+				if (arg3) {
+					arg3(success, error);
+				}
+			}];
+		}
+	}
+	if (arg3) {
+		arg3(nil, nil);
+	}
+}
++ (void)handleImageSave:(id)arg1 fromController:(id)arg2 completion:(void (^)(BOOL success, NSError *error))arg3 {
+
+	if (arg1) {
+		NSString *albumName = nil;
+		if ([[SCAppDelPrefs sharedInstance] scSnapSaveButton] && [[[SCAppDelPrefs sharedInstance] scSaveAlbumName] length]) {
+			albumName = [[SCAppDelPrefs sharedInstance] scSaveAlbumName];
+		}
+
+		[[self class] saveToPhotoLibraryWithImage:arg1 orVideoURL:nil albumName:albumName completion:^(BOOL success, NSError *error) {
+			if (arg3) {
+				arg3(success, error);
+			}
+		}];
+
+	}
+	if (arg3) {
+		arg3(nil, nil);
+	}
 
 }
-+ (void)handleVideoSave:(id)arg1 fromController:(id)arg2 completion:(CDUnknownBlockType)arg3 {
++ (void)showSaveAlertIfNeededForMediaType:(long long)arg1 controller:(id)arg2 saveBlock:(void (^)(BOOL success))arg3 {
+	if ([[SCAppDelPrefs sharedInstance] scSaveWithoutConfirm]) {
 
-}
-+ (void)handleImageSave:(id)arg1 fromController:(id)arg2 completion:(CDUnknownBlockType)arg3 {
+		NSString *message = @"";
+		if (arg1 == 1) {
+			// image
+			message = [[SCAppDelPrefs sharedInstance] localizedStringForKey:@"SAVE_ALERT_VIDEO"];
+		} else {
+			// video
+			message = [[SCAppDelPrefs sharedInstance] localizedStringForKey:@"SAVE_ALERT_IMAGE"];
+		}
+		[RMUniversalAlert showAlertInViewController:arg2
+                                  withTitle:@"IMSnapChat"
+                                    message:message
+                          cancelButtonTitle:[[SCAppDelPrefs sharedInstance] localizedStringForKey:@"SAVE_ALERT_CANCEL"]
+                     destructiveButtonTitle:nil
+                          otherButtonTitles:@[[[SCAppDelPrefs sharedInstance] localizedStringForKey:@"SAVE_ALERT_CONFIRM"]]
+                                   tapBlock:^(RMUniversalAlert *alert, NSInteger buttonIndex){
 
-}
-+ (void)showSaveAlertIfNeededForMediaType:(long long)arg1 controller:(id)arg2 saveBlock:(CDUnknownBlockType)arg3 {
+                                       if (buttonIndex != alert.cancelButtonIndex && buttonIndex != alert.destructiveButtonIndex && buttonIndex >= alert.firstOtherButtonIndex) {
+                                       		arg3(YES);
+                                       }
+
+                                   }];
+	} else {
+		if (arg3) {
+			arg3(nil, nil);
+		}
+	}
 
 }
 
 @end
-
